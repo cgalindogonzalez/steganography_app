@@ -62,15 +62,9 @@ public class Stegano {
 			else {
 				//hide the file within the pixels of the image
 				byte[] rawBytesImage = bmpFileReader.getBody().getRawBytes();
-				
-				
-				System.out.println("longitud rawBytesImage = " +rawBytesImage.length);
 				BufferedImage bImage = bmpFileReader.getBody().imageFromByteArray(rawBytesImage, width, height);
-				System.out.println("Width = " + width);
-				System.out.println("Height = " + height);
 				BufferedImage bImageWithFile = hideFileWithinPixelsOfImage (bImage, pairOfBitsArray);
 				byte[] rawBytesImageWithFile = bmpFileReader.getBody().byteArrayFromImage(bImageWithFile);
-				System.out.println("longitud rawBytesImageWithFile = " +rawBytesImageWithFile.length);
 				bmpFileReader.getBody().setRawBytes(rawBytesImageWithFile);
 				
 				//rebuild and save the new image (with the file hidden)
@@ -126,7 +120,7 @@ public class Stegano {
 			
 			//get the extension of the hidden file
 			String fileExtension = fileReader.getFileExtensionFromRecoveredArray(arrayToRecoverTheFile);
-			
+			System.out.println("extension: " + fileExtension);
 			//save the file
 			fileReader.saveFile(fileArray, bmpFilePath, fileExtension);
 			
@@ -196,6 +190,7 @@ public class Stegano {
 		int width = bi.getWidth();
 		int height = bi.getHeight();
 		byte[] LSBarray = new byte[3*width*height];
+		int i = 0;
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				int rgb = bi.getRGB(x, y);
@@ -207,8 +202,7 @@ public class Stegano {
 				int redLSB = red%4;
 				int greenLSB = green%4;
 				int blueLSB = blue%4;
-
-				int i = 3*(y + x*width);
+				
 				LSBarray[i] = (byte) redLSB;
 				LSBarray[i+1] = (byte) greenLSB;
 				LSBarray[i+2] = (byte) blueLSB;

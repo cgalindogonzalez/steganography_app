@@ -55,7 +55,7 @@ public class Main {
 //				String bmpFileName = sc.nextLine();
 				
 				String bmpFilePath = "/Users/Cecilia/Documents/AgilityFactory/CursoInformatica";
-				String bmpFileName = "24bpp.bmp";
+				String bmpFileName = "new24bpp.bmp";
 				Stegano stegano = new Stegano();
 				stegano.steganoRecover(bmpFilePath, bmpFileName);
 				
