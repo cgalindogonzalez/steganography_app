@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -256,8 +257,9 @@ public class FileReader {
 	 */
 	public void saveFile (byte[] fileArray, String pathFile, String extension) {
 		
-		String str = pathFile + System.getProperty("File.separator") + "recovered_file." + extension;
-		File file = new File(str);
+		String fileName = "recovered_file." + extension;
+		Path path = FileSystems.getDefault().getPath(pathFile, fileName);
+		File file = new File(path.toString());
 		
 		try {
 			FileOutputStream fos = new FileOutputStream(file);

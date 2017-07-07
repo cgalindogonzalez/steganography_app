@@ -1,5 +1,6 @@
 package com.scholanova.group2.cecilia.bmpfile;
 
+import java.awt.Point;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
@@ -13,6 +14,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
 
 import javax.imageio.ImageIO;
 
@@ -45,16 +49,7 @@ public class ImageBody {
 	 * @throws IOException 
 	 */
 	public byte[] byteArrayFromImage(BufferedImage bi) throws IOException {
-		
-		byte [] imageInByte = null;
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		
-		ImageIO.write(bi, "bmp", baos);
-		imageInByte = baos.toByteArray();
-		baos.close();
-		
-		return imageInByte;
-
+		return ((DataBufferByte) bi.getRaster().getDataBuffer()).getData();
 	}
 
 	/**
@@ -63,47 +58,39 @@ public class ImageBody {
 	 * @return
 	 * @throws IOException 
 	 */
-//	public BufferedImage imageFromByteArray(byte[] b) throws IOException {
-//		BufferedImage image = createRGBImage(bytes, width, height);
-//
-//		try {
-//		    ImageIO.write(image, "BMP", stream);
-//		}
-//		finally {
-//		    stream.close();
-//		}
-//		
-//		return ImageIO.read(is);
-//	}
-
 	public BufferedImage imageFromByteArray(byte[] bytes, int width, int height) {
-	    DataBufferByte buffer = new DataBufferByte(bytes, bytes.length);
-	    ColorModel cm = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB), new int[]{8, 8, 8}, false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
-	    return new BufferedImage(cm, Raster.createInterleavedRaster(buffer, width, height, width * 3, 3, new int[]{0, 1, 2}, null), false, null);
+		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+		DataBufferByte dbf = new DataBufferByte(bytes, bytes.length);
+		Point point = new Point();
+		image.setData(Raster.createRaster(image.getSampleModel(), dbf, point ) );
+		return image;
 	}
 
 	
-	
-	
-
+	/**
+	 * 
+	 * @param raf
+	 * @param offset
+	 * @param size
+	 * @throws IOException
+	 */
 	public void read(RandomAccessFile raf, int offset, int size) throws IOException {
 		this.rawBytes = new byte[size];
 		raf.seek(offset);
 		raf.read(this.rawBytes);
 	}
 
-
+	/**
+	 * 
+	 * @param raf
+	 * @param offset
+	 * @throws IOException
+	 */
 	public void write(RandomAccessFile raf, int offset) throws IOException {
 		if (this.rawBytes == null) 
 			throw new IllegalStateException("no puedes hacer write si antes no has inicializado rawBytes");
 		raf.seek(offset);
 		raf.write(this.rawBytes);
-	}
-	
-
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

@@ -62,9 +62,15 @@ public class Stegano {
 			else {
 				//hide the file within the pixels of the image
 				byte[] rawBytesImage = bmpFileReader.getBody().getRawBytes();
+				
+				
+				System.out.println("longitud rawBytesImage = " +rawBytesImage.length);
 				BufferedImage bImage = bmpFileReader.getBody().imageFromByteArray(rawBytesImage, width, height);
+				System.out.println("Width = " + width);
+				System.out.println("Height = " + height);
 				BufferedImage bImageWithFile = hideFileWithinPixelsOfImage (bImage, pairOfBitsArray);
 				byte[] rawBytesImageWithFile = bmpFileReader.getBody().byteArrayFromImage(bImageWithFile);
+				System.out.println("longitud rawBytesImageWithFile = " +rawBytesImageWithFile.length);
 				bmpFileReader.getBody().setRawBytes(rawBytesImageWithFile);
 				
 				//rebuild and save the new image (with the file hidden)
@@ -126,7 +132,10 @@ public class Stegano {
 			
 			String fileName = "recovered_file." + fileExtension;
 			Path recoveredFile = FileSystems.getDefault().getPath(bmpFilePath, fileName);
+			
+			System.out.println("You can find the file in: " + recoveredFile);
 		
+			
 		}
 		
 		else {
@@ -143,8 +152,7 @@ public class Stegano {
 		int imageWidth = image.getWidth();
 		int imageHeight = image.getHeight();
 		
-		BufferedImage newImage = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_3BYTE_BGR);
-
+		
 		for (int x = 0; x < imageWidth; x++) {
 			for (int y = 0; y < imageHeight; y++) {
 				int rgb = image.getRGB(x, y);
@@ -158,18 +166,25 @@ public class Stegano {
 				int blueRounded = (blue-blue%4);
 
 				int i = (y + x*imageWidth);
-				if (byteArray.length < i) {
+				if ((i+2) < byteArray.length) {
 					red = redRounded + byteArray[i];
 					green = greenRounded + byteArray[i+1];
 					blue = blueRounded + byteArray[i+2];
 					i+=3;
 				}
+				else if ((i+1) < byteArray.length) {
+					red = redRounded + byteArray[i];
+					green = greenRounded + byteArray[i+1];
+				}
+				else if (i < byteArray.length) {
+					red = redRounded + byteArray[i];
+				}
 				
 				Color newColor = new Color(red, green, blue);
-				newImage.setRGB(x, y, newColor.getRGB());
+				image.setRGB(x, y, newColor.getRGB());
 			}
 		}
-		return newImage;
+		return image;
 	}
 
 	/**
@@ -197,7 +212,7 @@ public class Stegano {
 				LSBarray[i] = (byte) redLSB;
 				LSBarray[i+1] = (byte) greenLSB;
 				LSBarray[i+2] = (byte) blueLSB;
-				
+				i+=3;
 			}
 		}
 		
