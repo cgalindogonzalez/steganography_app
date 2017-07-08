@@ -21,22 +21,22 @@ public class Main {
 			//Selection 1: Hide file into image
 			if (choice.equals("1")) {
 
-//				System.out.println("******************************");
-//				System.out.println("1. HIDE A FILE IN A BMP IMAGE");
-//				System.out.println("******************************");
-//				
-//				System.out.println("Insert the file path of the image.");
-//				String bmpFilePath = sc.nextLine();
-//				System.out.println("Insert the file name (with the extension) of the image.");
-//				String bmpFileName = sc.nextLine();
-//				System.out.println("Insert the file path of the file to hide");
-//				String fileToHidePath = sc.nextLine();
-//				System.out.println("Insert the file name (with the extension) of the file to hide");
-//				String fileToHideName = sc.nextLine();
-				String bmpFilePath = "/Users/Cecilia/Documents/AgilityFactory/CursoInformatica";
-				String bmpFileName = "24bpp.bmp";
-				String fileToHidePath = "/Users/Cecilia/Documents/AgilityFactory/CursoInformatica";
-				String fileToHideName = "operation.txt";
+				System.out.println("******************************");
+				System.out.println("1. HIDE A FILE IN A BMP IMAGE");
+				System.out.println("******************************");
+				
+				System.out.println("Insert the file path of the image.");
+				String bmpFilePath = sc.nextLine();
+				System.out.println("Insert the file name (with the extension) of the image.");
+				String bmpFileName = sc.nextLine();
+				System.out.println("Insert the file path of the file to hide");
+				String fileToHidePath = sc.nextLine();
+				System.out.println("Insert the file name (with the extension) of the file to hide");
+				String fileToHideName = sc.nextLine();
+//				String bmpFilePath = "/Users/Cecilia/Documents/AgilityFactory/CursoInformatica";
+//				String bmpFileName = "24bpp.bmp";
+//				String fileToHidePath = "/Users/Cecilia/Documents/AgilityFactory/CursoInformatica";
+//				String fileToHideName = "operation.txt";
 						
 				Stegano stegano = new Stegano();
 				stegano.steganoHide(bmpFilePath, bmpFileName, fileToHidePath, fileToHideName);
