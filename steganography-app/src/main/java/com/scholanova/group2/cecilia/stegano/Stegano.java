@@ -12,7 +12,6 @@ import com.scholanova.group2.cecilia.bmpfile.BMPIdentifierEnum;
 import com.scholanova.group2.cecilia.filetohide.FileReader;
 
 
-
 public class Stegano {
 	
 	/**
@@ -82,6 +81,7 @@ public class Stegano {
 		}
 	}
 	
+	
 	/**
 	 * 
 	 * @param bmpFilePath
@@ -147,19 +147,19 @@ public class Stegano {
 		int imageHeight = image.getHeight();
 		
 		
-		for (int x = 0; x < imageWidth; x++) {
-			for (int y = 0; y < imageHeight; y++) {
-				int rgb = image.getRGB(x, y);
+		for (int x = 0; x < imageHeight; x++) {
+			for (int y = 0; y < imageWidth; y++) {
+				int rgb = image.getRGB(y, x);
 				Color color = new Color(rgb, true);
 				int red = color.getRed();
 				int green = color.getGreen();
 				int blue = color.getBlue();
 
-				int redRounded = (red-red%4);
-				int greenRounded = (green-green%4);
-				int blueRounded = (blue-blue%4);
+				int redRounded = (red-(red & 3));
+				int greenRounded = (green-(green & 3));
+				int blueRounded = (blue-(blue & 3));
 
-				int i = (y + x*imageWidth);
+				int i = (y + x*imageHeight);
 				if ((i+2) < byteArray.length) {
 					red = redRounded + byteArray[i];
 					green = greenRounded + byteArray[i+1];
@@ -175,7 +175,7 @@ public class Stegano {
 				}
 				
 				Color newColor = new Color(red, green, blue);
-				image.setRGB(x, y, newColor.getRGB());
+				image.setRGB(y, x, newColor.getRGB());
 			}
 		}
 		return image;
@@ -199,9 +199,9 @@ public class Stegano {
 				int green = color.getGreen();
 				int blue = color.getBlue();
 
-				int redLSB = red%4;
-				int greenLSB = green%4;
-				int blueLSB = blue%4;
+				int redLSB = red & 3;
+				int greenLSB = green & 3;
+				int blueLSB = blue & 3;
 				
 				LSBarray[i] = (byte) redLSB;
 				LSBarray[i+1] = (byte) greenLSB;

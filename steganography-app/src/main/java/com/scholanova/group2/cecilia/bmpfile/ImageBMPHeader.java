@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 public class ImageBMPHeader {
-	
+
 	private byte[] headerSize = new byte[4]; //the size of this header, i.e. 40 bytes
 	private byte[] imageWidth = new byte[4]; // the bitmap width in pixels (signed integer)
 	private byte[] imageHeight = new byte[4]; // the bitmap height in pixels (signed integer)
@@ -17,26 +17,25 @@ public class ImageBMPHeader {
 	private byte[] horizontalResolution = new byte[4]; // pixel per meter, signed integer 
 	private byte[] verticalResolution = new byte[4]; // pixel per meter, signed integer
 	private byte[] paletteColors = new byte[4]; // the number of colors in the color palette, or 0 to default to 2n 
- 	private byte[] importantColors = new byte[4]; // the number of important colors used, or 0 when every color is important; generally ignored
-	
- 	/**
- 	 * getter
- 	 * @return headerSize
- 	 */
- 	public byte[] getHeaderSize() {
+	private byte[] importantColors = new byte[4]; // the number of important colors used, or 0 when every color is important; generally ignored
+
+
+	/**
+	 * getter
+	 * @return headerSize
+	 */
+	public byte[] getHeaderSize() {
 		return this.headerSize;
 	}
-	
-	
- 	/**
- 	 * setter
- 	 * @param headerSize
- 	 */
+
+	/**
+	 * setter
+	 * @param headerSize
+	 */
 	public void setHeaderSize(byte[] headerSize) {
 		this.headerSize = headerSize;
 	}
 
-	
 	/**
 	 * getter
 	 * @return imageWidth
@@ -44,8 +43,7 @@ public class ImageBMPHeader {
 	public byte[] getImageWidth() {
 		return this.imageWidth;
 	}
-	
-	
+
 	/**
 	 * setter
 	 * @param imageWidth
@@ -62,8 +60,6 @@ public class ImageBMPHeader {
 		return this.imageHeight;
 	}
 
-
-	
 	/**
 	 * setter
 	 * @param imageHeight
@@ -79,9 +75,7 @@ public class ImageBMPHeader {
 	public byte[] getColorPlanes() {
 		return this.colorPlanes;
 	}
-	
-	
-	
+
 	/**
 	 * setter
 	 * @param colorPlanes
@@ -97,8 +91,7 @@ public class ImageBMPHeader {
 	public byte[] getColorDepth() {
 		return this.colorDepth;
 	}
-	
-	
+
 	/**
 	 * setter
 	 * @param colorDepth
@@ -115,7 +108,6 @@ public class ImageBMPHeader {
 		return this.compressionMethod;
 	}
 
-	
 	/**
 	 * setter
 	 * @param compressionMethod
@@ -124,7 +116,6 @@ public class ImageBMPHeader {
 		this.compressionMethod = compressionMethod;
 	}
 
-	
 	/**
 	 * getter
 	 * @return imageSize
@@ -132,8 +123,7 @@ public class ImageBMPHeader {
 	public byte[] getImageSize() {
 		return this.imageSize;
 	}
-	
-	
+
 	/**
 	 * setter
 	 * @param imageSize
@@ -149,8 +139,7 @@ public class ImageBMPHeader {
 	public byte[] getHorizontalResolution() {
 		return this.horizontalResolution;
 	}
-	
-	
+
 	/**
 	 * setter
 	 * @param horizontalResolution
@@ -159,7 +148,6 @@ public class ImageBMPHeader {
 		this.horizontalResolution = horizontalResolution;
 	}
 
-	
 	/**
 	 * getter
 	 * @return verticalResolution
@@ -167,8 +155,7 @@ public class ImageBMPHeader {
 	public byte[] getVerticalResolution() {
 		return this.verticalResolution;
 	}
-	
-	
+
 	/**
 	 * setter
 	 * @param verticalResolution
@@ -184,8 +171,7 @@ public class ImageBMPHeader {
 	public byte[] getPaletteColors() {
 		return this.paletteColors;
 	}
-	
-	
+
 	/**
 	 * setter
 	 * @param paletteColors
@@ -202,7 +188,6 @@ public class ImageBMPHeader {
 		return this.importantColors;
 	}
 
-	
 	/**
 	 * setter
 	 * @param importantColors
@@ -210,7 +195,8 @@ public class ImageBMPHeader {
 	public void setImportantColors(byte[] importantColors) {
 		this.importantColors = importantColors;
 	}
-	
+
+
 	/**
 	 * get the size of the bmp header from the byte array headerSize
 	 * @param headerSize
@@ -219,8 +205,8 @@ public class ImageBMPHeader {
 	public int decodeSizeOfImageHeader () {
 		return ByteBuffer.wrap(this.headerSize).order(ByteOrder.LITTLE_ENDIAN).getInt();
 	}
-	
-	
+
+
 	/**
 	 * get the width of the image in pixels from the byte array imageWidth
 	 * @param imageWidth
@@ -229,7 +215,8 @@ public class ImageBMPHeader {
 	public int decodeImageWidth () {
 		return ByteBuffer.wrap(this.imageWidth).order(ByteOrder.LITTLE_ENDIAN).getInt();
 	}
-	
+
+
 	/**
 	 * get the height of the image in pixels from the byte array imageHeight
 	 * @param imageHeight
@@ -238,7 +225,8 @@ public class ImageBMPHeader {
 	public int decodeImageHeight () {
 		return ByteBuffer.wrap(this.imageHeight).order(ByteOrder.LITTLE_ENDIAN).getInt();
 	}
-	
+
+
 	/**
 	 * get the number of color planes from the byte array colorPlanes
 	 * @param colorPlanes
@@ -247,7 +235,8 @@ public class ImageBMPHeader {
 	public int decodeColorPlanes () {
 		return ByteBuffer.wrap(this.colorPlanes).order(ByteOrder.LITTLE_ENDIAN).getShort();
 	}
-	
+
+
 	/**
 	 * get the number of bits per pixel from the byte array colorDepth
 	 * @param colorDepth
@@ -256,7 +245,8 @@ public class ImageBMPHeader {
 	public int decodeColorDepth () {
 		return ByteBuffer.wrap(this.colorDepth).order(ByteOrder.LITTLE_ENDIAN).getShort();
 	}
-	
+
+
 	/**
 	 * get the compression method used (0 means non compression) from the byte array compressionMethod  
 	 * @param compressionMethod
@@ -265,16 +255,17 @@ public class ImageBMPHeader {
 	public int decodeCompressionMethod () {
 		return ByteBuffer.wrap(this.compressionMethod).order(ByteOrder.LITTLE_ENDIAN).getInt();
 	}
-	
+
+
 	/**
-	 * 
+	 * get the size of the raw bitmap data from the byte array imageSize 
 	 * @return
 	 */
 	public int decodeImageSize() {
 		return ByteBuffer.wrap(this.imageSize).order(ByteOrder.LITTLE_ENDIAN).getInt();
 	}
-	
-	
+
+
 	/**
 	 * get the horizontal resolution in pixel per meter from the byte array horizontalResolution  
 	 * @param horizontalResolution
@@ -283,8 +274,8 @@ public class ImageBMPHeader {
 	public int decodeHorizontalResolution () {
 		return ByteBuffer.wrap(this.horizontalResolution).order(ByteOrder.LITTLE_ENDIAN).getInt();
 	}
-	
-	
+
+
 	/**
 	 * get the vertical resolution in pixel per meter from the byte array verticalResolution  
 	 * @param verticalResolution
@@ -293,7 +284,8 @@ public class ImageBMPHeader {
 	public int decodeVerticalResolution () {
 		return ByteBuffer.wrap(this.verticalResolution).order(ByteOrder.LITTLE_ENDIAN).getInt();
 	}
-	
+
+
 	/**
 	 * get the number of colors in the color palette from the byte array paletteColors  
 	 * @param paletteColors
@@ -302,7 +294,8 @@ public class ImageBMPHeader {
 	public int decodePaletteColors () {
 		return ByteBuffer.wrap(this.paletteColors).order(ByteOrder.LITTLE_ENDIAN).getInt();
 	}
-	
+
+
 	/**
 	 * get the number of important colors used from the byte array importantColors  
 	 * @param importantColors
@@ -312,13 +305,14 @@ public class ImageBMPHeader {
 		return ByteBuffer.wrap(this.importantColors).order(ByteOrder.LITTLE_ENDIAN).getInt();
 	}
 
+
 	/**
-	 * 
+	 * read each field of the image header from a RandomAccesFile object created from a bmp file
 	 * @param raf
 	 * @throws IOException
 	 */
 	public void read(RandomAccessFile raf) throws IOException {
-		raf.seek(14);
+		raf.seek(14); //image bmp header begin at byte 14 
 		raf.read(this.headerSize);
 		raf.read(this.imageWidth);
 		raf.read(this.imageHeight);
@@ -329,13 +323,12 @@ public class ImageBMPHeader {
 		raf.read(this.horizontalResolution);
 		raf.read(this.verticalResolution);
 		raf.read(this.paletteColors);
-		raf.read(this.importantColors);
-		
-		
+		raf.read(this.importantColors);	
 	}
 
+
 	/**
-	 * 
+	 * write the fields of a bmp image header on a RandonAccesFIle object  
 	 * @param raf
 	 * @throws IOException
 	 */
@@ -351,8 +344,7 @@ public class ImageBMPHeader {
 		raf.write(this.horizontalResolution);
 		raf.write(this.verticalResolution);
 		raf.write(this.paletteColors);
-		raf.write(this.importantColors);
-		
+		raf.write(this.importantColors);	
 	}
-	
+
 }

@@ -1,28 +1,16 @@
 package com.scholanova.group2.cecilia.bmpfile;
 
 import java.awt.Point;
-import java.awt.Transparency;
-import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
-
-import javax.imageio.ImageIO;
 
 public class ImageBody {
 
 	private byte[] rawBytes;
+
 
 	/**
 	 * getter
@@ -32,7 +20,6 @@ public class ImageBody {
 		return rawBytes;
 	}
 
-
 	/**
 	 * setter
 	 * @param rawBytes
@@ -41,7 +28,7 @@ public class ImageBody {
 		this.rawBytes = rawBytes;
 	}
 
-	
+
 	/**
 	 * convert a buffered image into a byte array 
 	 * @param bi
@@ -51,6 +38,7 @@ public class ImageBody {
 	public byte[] byteArrayFromImage(BufferedImage bi) throws IOException {
 		return ((DataBufferByte) bi.getRaster().getDataBuffer()).getData();
 	}
+
 
 	/**
 	 * convert a byte array into a buffered image
@@ -62,13 +50,13 @@ public class ImageBody {
 		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
 		DataBufferByte dbf = new DataBufferByte(bytes, bytes.length);
 		Point point = new Point();
-		image.setData(Raster.createRaster(image.getSampleModel(), dbf, point ) );
+		image.setData(Raster.createRaster(image.getSampleModel(), dbf, point ));
 		return image;
 	}
 
-	
+
 	/**
-	 * 
+	 * read the raw bitmap data from a RandomAccesFile object created from a bmp file
 	 * @param raf
 	 * @param offset
 	 * @param size
@@ -76,19 +64,18 @@ public class ImageBody {
 	 */
 	public void read(RandomAccessFile raf, int offset, int size) throws IOException {
 		this.rawBytes = new byte[size];
-		raf.seek(offset);
+		raf.seek(offset); 
 		raf.read(this.rawBytes);
 	}
 
+
 	/**
-	 * 
+	 * write a raw bitmp data of a bmp image on a RandomAccesFile object
 	 * @param raf
 	 * @param offset
 	 * @throws IOException
 	 */
 	public void write(RandomAccessFile raf, int offset) throws IOException {
-		if (this.rawBytes == null) 
-			throw new IllegalStateException("no puedes hacer write si antes no has inicializado rawBytes");
 		raf.seek(offset);
 		raf.write(this.rawBytes);
 	}

@@ -4,13 +4,11 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.FileSystems;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class FileReader {
@@ -19,7 +17,8 @@ public class FileReader {
 	private long fileToHideSize;
 	private byte fileExtensionSize;
 	private String fileExtension; 
-	
+
+
 	/**
 	 * getter
 	 * @return pairOfBits
@@ -52,7 +51,6 @@ public class FileReader {
 		this.fileToHideSize = fileToHideSize;
 	}
 
-	
 	/**
 	 * getter
 	 * @return fileExtension
@@ -85,21 +83,22 @@ public class FileReader {
 		this.fileExtensionSize = fileExtensionSize;
 	}
 
+
 	/**
-	 * 
+	 * get the extension of a file from his path
 	 * @param path
 	 * @return
 	 */
 	public String getFileExtension (Path path) {
 		String name = path.toString();
-	    try {
-	        return name.substring(name.lastIndexOf(".") + 1);
-	    } catch (Exception e) {
-	        return "";
-	    }
+		try {
+			return name.substring(name.lastIndexOf(".") + 1);
+		} catch (Exception e) {
+			return "";
+		}
 	}
-	
-	
+
+
 	/** 
 	 * get the required information to subsequent file recovery and reconstruction 
 	 * @param file
@@ -107,30 +106,33 @@ public class FileReader {
 	 * @throws IOException 
 	 */
 	public byte[] getFileInformationToReconstruction(File file, Path path) throws IOException {
-	
+
 		this.fileToHideSize = file.length();
 		this.fileExtension = getFileExtension(path);
 		this.fileExtensionSize = (byte) fileExtension.length();
-		
+
+		//8 byte array with the size of the file to hide or recover
 		byte[] informationSize = new byte[8];
-		ByteBuffer buf = ByteBuffer.wrap(informationSize);
+		ByteBuffer buf = ByteBuffer.wrap(informationSize).order(ByteOrder.LITTLE_ENDIAN);
 		buf.putLong(fileToHideSize);
-		
+
+		//1 byte array with the size of the file extension 
 		byte[] informationExtensionSize = {this.fileExtensionSize};
-		
+
+		//byte array with the file extension (lenght of this array is determined by fileExtensionSize)
 		byte[] informationExtension = new byte[this.fileExtensionSize];
 		informationExtension = fileExtension.getBytes(); 
-		
+
 		byte[] information = new byte[(9+informationExtension.length)]; 
-		
+
 		System.arraycopy(informationSize, 0, information, 0, 8);
 		System.arraycopy(informationExtensionSize, 0, information, 8, 1);
 		System.arraycopy(informationExtension, 0, information, 9, informationExtension.length); 
-		
+
 		return information;
 	}
-	
-	
+
+
 	/**
 	 * read a file and get an array with his bytes 
 	 * @param file
@@ -138,7 +140,7 @@ public class FileReader {
 	 * @throws IOException 
 	 */
 	public byte[] readFile(File file) throws IOException {
-		
+
 		byte[] fileByteArray = new byte[(int) file.length()];
 
 		FileInputStream	fis = new FileInputStream(file);
@@ -151,6 +153,7 @@ public class FileReader {
 		return fileByteArray;
 	}
 
+
 	/**
 	 * concatenate the byte array with the information of the file and the byte array with the stored bytes from the file and get the array to hide in the image 
 	 * @param information
@@ -160,15 +163,15 @@ public class FileReader {
 	public byte[] concatenateInformationReadArrays(byte[] information, byte[] fileByteArray) {
 		int informationLength = information.length;
 		int fileByteArrayLength = fileByteArray.length;
-		
+
 		byte[] fileToHideArray = new byte[informationLength + fileByteArrayLength];
 		System.arraycopy(information, 0, fileToHideArray, 0, informationLength);
 		System.arraycopy(fileByteArray, 0, fileToHideArray, informationLength, fileByteArrayLength);
 
 		return fileToHideArray;
-		
 	}
-	
+
+
 	/**
 	 * get a byte array dividing each byte from another array into four pairs of bits 
 	 * @param b
@@ -184,10 +187,10 @@ public class FileReader {
 			pairOfBits[j+3] = (byte) ((b[i] & 192) >>> 6);
 			j+= 4;
 		}
-		
 		return pairOfBits;
 	}
-	
+
+
 	/**
 	 * get an array of bytes made up using four pairs of bits 
 	 * @param b
@@ -201,14 +204,13 @@ public class FileReader {
 			int b3 = b[i+1];
 			int b2 = b[i+2];
 			int b1 = b[i+3];
-			
 			byteArray[j] = (byte) (b4 + (b3 << 2) + (b2 << 4) + (b1 << 6));
 			j++;
 		}
-		
 		return byteArray;	
 	}
-	
+
+
 	/**
 	 * get the size of the file from the first bytes of the recovered array
 	 * @param b
@@ -217,11 +219,11 @@ public class FileReader {
 	public long getFileSizeFromRecoveredArray(byte[] b) {
 		byte[] sizeFileArray = new byte[8];
 		System.arraycopy(b, 0, sizeFileArray, 0, 8);
-		
 		long size = ByteBuffer.wrap(sizeFileArray).order(ByteOrder.LITTLE_ENDIAN).getLong();
 		return size;
 	}
-	
+
+
 	/**
 	 * get the extension of the file from the next ¿eight? bytes of the recovered array
 	 * @param b
@@ -231,10 +233,10 @@ public class FileReader {
 		byte fileExtensionSize = b[8];
 		byte[] extensionFileArray = new byte[fileExtensionSize];
 		String str = new String (extensionFileArray);
-		
 		return str;
 	}
-	
+
+
 	/**
 	 * get the byte array with bytes of the file from the recovered array (that can be longer than the file size)
 	 * @param b
@@ -244,10 +246,10 @@ public class FileReader {
 	public byte[] getFileArrayFromRecoveredArray (byte[] b, long size) {
 		int length = (int) size;
 		byte[] fileArray = new byte[length];
-		System.arraycopy(b, 16, fileArray, 0, length);
-				
+		System.arraycopy(b, 16, fileArray, 0, length);		
 		return fileArray;
 	}
+
 
 	/**
 	 * recover the file and save it with the name recovered_file into the folder where the image is
@@ -256,22 +258,18 @@ public class FileReader {
 	 * @param extension
 	 */
 	public void saveFile (byte[] fileArray, String pathFile, String extension) {
-		
 		String fileName = "recovered_file." + extension;
 		Path path = FileSystems.getDefault().getPath(pathFile, fileName);
 		File file = new File(path.toString());
-		
 		try {
 			FileOutputStream fos = new FileOutputStream(file);
 			BufferedOutputStream bos = new BufferedOutputStream(fos);
 			bos.write(fileArray);
-			bos.close();
-			
+			bos.close();	
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
-	
+
 }

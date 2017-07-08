@@ -5,12 +5,12 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 public class BMPFileReader {
-	
+
 	private ImageFileHeader fileHeader; 
 	private ImageBMPHeader bmpHeader; 
 	private ImageBody body; 
-	
-	
+
+
 
 	/**
 	 * getter
@@ -19,7 +19,7 @@ public class BMPFileReader {
 	public ImageFileHeader getFileHeader() {
 		return this.fileHeader;
 	}
-	
+
 
 	/**
 	 * setter
@@ -45,8 +45,8 @@ public class BMPFileReader {
 	public void setBmpHeader(ImageBMPHeader bmpHeader) {
 		this.bmpHeader = bmpHeader;
 	}
-	
-	
+
+
 	/**
 	 * getter
 	 * @return body
@@ -63,8 +63,8 @@ public class BMPFileReader {
 	public void setBody(ImageBody body) {
 		this.body = body;
 	}
-	
-	
+
+
 	/**
 	 * read a bmp image file and divide it into his parts (file header, bmp header and body)
 	 * @param file
@@ -72,41 +72,34 @@ public class BMPFileReader {
 	 */
 	public void readBMPFile(File file) throws IOException {
 
-			RandomAccessFile raf = new RandomAccessFile(file,"r");
-			
-			this.fileHeader = new ImageFileHeader();
-			this.fileHeader.read(raf);
+		RandomAccessFile raf = new RandomAccessFile(file,"r");
 
-			this.bmpHeader = new ImageBMPHeader();
-			this.bmpHeader.read(raf);
-			
-			this.body = new ImageBody();
-			int offset = this.fileHeader.decodeOffset();
-			int size = this.bmpHeader.decodeImageSize();
-			this.body.read(raf, offset, size);
-			
+		this.fileHeader = new ImageFileHeader();
+		this.fileHeader.read(raf);
+
+		this.bmpHeader = new ImageBMPHeader();
+		this.bmpHeader.read(raf);
+
+		this.body = new ImageBody();
+		int offset = this.fileHeader.decodeOffset();
+		int size = this.bmpHeader.decodeImageSize();
+		this.body.read(raf, offset, size);
+
 	}
-	
 
+	/**
+	 * write and save a bmp file from his parts (file header, bmp header and body)
+	 * @param file
+	 * @throws IOException
+	 */
 	public void writeBMPFile(File file) throws IOException {
-		
+
 		RandomAccessFile raf = new RandomAccessFile(file,"rw");
-		
+
 		this.fileHeader.write(raf);
 		this.bmpHeader.write(raf);
 		int offset = this.fileHeader.decodeOffset();
 		this.body.write(raf, offset);
-			
+
 	}
-
-	
-	public static void main (String[] args) {
-
-		
-	}
-
-
-
-	
-
 }
