@@ -13,9 +13,9 @@ import com.scholanova.group2.cecilia.filetohide.FileReader;
 
 
 public class Stegano {
-	
+
 	/**
-	 * 
+	 * hide a file in a BMP 24 bits image 
 	 * @param bmpFilePath
 	 * @param bmpFileName
 	 * @param fileToHidePath
@@ -23,7 +23,7 @@ public class Stegano {
 	 * @throws IOException
 	 */
 	public void steganoHide(String bmpFilePath, String bmpFileName, Path bmpFile, String fileToHidePath, String fileToHideName, Path fileToHide) throws IOException {
-	
+
 		//read the bmpFile and divide it into his parts (file header, bmp header and image body)
 		BMPFileReader bmpFileReader = new BMPFileReader();
 		bmpFileReader.readBMPFile(bmpFile.toFile());
@@ -31,9 +31,8 @@ public class Stegano {
 		//check if the image file is already BMP 24 bits
 		String bmpIdentifier = bmpFileReader.getFileHeader().decodeType();
 		int bitsPerPixel = bmpFileReader.getBmpHeader().decodeColorDepth();
-		
-		if (BMPIdentifierEnum.getEnums().contains(bmpIdentifier) && (bitsPerPixel == 24)){
 
+		if (BMPIdentifierEnum.getEnums().contains(bmpIdentifier) && (bitsPerPixel == 24)){
 			//reckon the maximun size of the file to hide
 			int width = bmpFileReader.getBmpHeader().decodeImageWidth(); 
 			int height = bmpFileReader.getBmpHeader().decodeImageHeight();
@@ -41,11 +40,12 @@ public class Stegano {
 			int numberOfPixels = width*height;
 			int maxSize = 3*numberOfPixels/4; // number of bytes that can be hidden (one byte is divided into four pair of bits). 
 
+			//read the file to hide
 			FileReader fileReader = new FileReader();
 			File file = fileToHide.toFile();
-			
+
 			byte[] fileInformation = fileReader.getFileInformationToReconstruction(file, fileToHide); //get the byte array with the information of the file to hide 
-			byte[] readFileArray = fileReader.readFile(file); //get the byte array with the bytes of the file to hide
+			byte[] readFileArray = fileReader.readFile(file); //get the byte array with the bytes of the file to hide (by reading the file)
 			byte[] fileArray = fileReader.concatenateInformationReadArrays(fileInformation, readFileArray); //concatenate both arrays 
 			byte[] pairOfBitsArray = fileReader.getPairOfBitsFromByteArray(fileArray);
 
@@ -54,7 +54,6 @@ public class Stegano {
 			if (fileArraySize > maxSize) 
 				System.out.println("The file is too large to be hiden in this image");
 
-
 			else {
 				//hide the file within the pixels of the image
 				byte[] rawBytesImage = bmpFileReader.getBody().getRawBytes();
@@ -62,13 +61,13 @@ public class Stegano {
 				BufferedImage bImageWithFile = hideFileWithinPixelsOfImage (bImage, pairOfBitsArray);
 				byte[] rawBytesImageWithFile = bmpFileReader.getBody().byteArrayFromImage(bImageWithFile);
 				bmpFileReader.getBody().setRawBytes(rawBytesImageWithFile);
-				
+
 				//rebuild and save the new image (with the file hidden)
 				String newBMPFileName = "new" + bmpFileName;
 				Path newImagePath = FileSystems.getDefault().getPath(bmpFilePath, newBMPFileName);
-				
+
 				bmpFileReader.writeBMPFile(newImagePath.toFile()); 
-				
+
 				System.out.println("You can find the image in: " + newImagePath.toString());
 			}
 		} 
@@ -77,55 +76,56 @@ public class Stegano {
 			System.out.println("The image is not a BMP 24 bits file");
 		}
 	}
-	
-	
+
+
 	/**
-	 * 
+	 * recover a hidden file from a BMP 24 bits image
 	 * @param bmpFilePath
 	 * @param bmpFileName
 	 * @throws IOException
 	 */
 	public void steganoRecover (String bmpFilePath, Path bmpFile) throws IOException {
-		
+
 		BMPFileReader bmpFileReader = new BMPFileReader();
 		bmpFileReader.readBMPFile(bmpFile.toFile());
-		
-		//check if the image file is already BMP 24 bits
-		String bmpIdentifier = bmpFileReader.getFileHeader().decodeType();
 
+
+		String bmpIdentifier = bmpFileReader.getFileHeader().decodeType();
 		int bitsPerPixel = bmpFileReader.getBmpHeader().decodeColorDepth();
 
+		//check if the image file is already BMP 24 bits
 		if (BMPIdentifierEnum.getEnums().contains(bmpIdentifier) && (bitsPerPixel == 24)){
-			
+			//get the raw bytes, the width and the height of the image 
 			byte[] rawImage = bmpFileReader.getBody().getRawBytes();
 			int width = bmpFileReader.getBmpHeader().decodeImageWidth(); 
 			int height = bmpFileReader.getBmpHeader().decodeImageHeight();
-			
+
+			//recover the array with the LSB of the pixels of the buffered image (built with the raw bytes)
 			BufferedImage bImage = bmpFileReader.getBody().imageFromByteArray(rawImage, width, height);
 			byte[] pairOfBitsToRecoverTheFile = recoverHiddenBytesFromTheImage(bImage);
-			
+
 			FileReader fileReader = new FileReader();
-			byte[] arrayToRecoverTheFile = fileReader.getByteArrayFromPairOfBits(pairOfBitsToRecoverTheFile);
-			
+			byte[] arrayToRecoverTheFile = fileReader.getByteArrayFromPairOfBits(pairOfBitsToRecoverTheFile);//each byte of this array is made up of 4 pairs of bits of the former array
+
 			//get the size of the hidden file
 			long fileLehgth = fileReader.getFileSizeFromRecoveredArray(arrayToRecoverTheFile);
-			
+
 			//get the extension of the hidden file
 			String fileExtension = fileReader.getFileExtensionFromRecoveredArray(arrayToRecoverTheFile);
-			
+
 			//get a byte array from the recovered array whose length is the file size (after removing the file information located on the first bytes)
 			byte[] fileArray = fileReader.getFileArrayFromRecoveredArray(arrayToRecoverTheFile, fileLehgth);
-			
+
 			//save the file
 			fileReader.saveFile(fileArray, bmpFilePath, fileExtension);
-			
+
 			String fileName = "recovered_file." + fileExtension;
 			Path recoveredFile = FileSystems.getDefault().getPath(bmpFilePath, fileName);
-			
+
 			System.out.println("You can find the file in: " + recoveredFile);
-			
+
 		}
-		
+
 		else {
 			System.out.println("The image is not a BMP 24 bits file");
 		}
@@ -139,7 +139,7 @@ public class Stegano {
 	public BufferedImage hideFileWithinPixelsOfImage (BufferedImage image, byte[] byteArray) {
 		int imageWidth = image.getWidth();
 		int imageHeight = image.getHeight();
-		
+
 		int i = 0;
 		for (int x = 0; x < imageHeight; x++) {
 			for (int y = 0; y < imageWidth; y++) {
@@ -166,7 +166,7 @@ public class Stegano {
 				else if (i < byteArray.length) {
 					red = redRounded + byteArray[i];
 				}
-				
+
 				Color newColor = new Color(red, green, blue);
 				image.setRGB(y, x, newColor.getRGB());
 			}
@@ -195,15 +195,29 @@ public class Stegano {
 				int redLSB = red & 3;
 				int greenLSB = green & 3;
 				int blueLSB = blue & 3;
-				
+
 				LSBarray[i] = (byte) redLSB;
 				LSBarray[i+1] = (byte) greenLSB;
 				LSBarray[i+2] = (byte) blueLSB;
 				i+=3;
 			}
 		}
-		
+
 		return LSBarray;
-		
+
+	}
+
+	/**
+	 * get the extension of a file from his path
+	 * @param path
+	 * @return
+	 */
+	public static String getFileExtension (Path path) {
+		String name = path.toString();
+		try {
+			return name.substring(name.lastIndexOf(".") + 1);
+		} catch (Exception e) {
+			return "";
+		}
 	}
 }

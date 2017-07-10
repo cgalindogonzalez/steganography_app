@@ -24,7 +24,6 @@ public class Main {
 
 			//Selection 1: Hide file into image
 			if (choice.equals("1")) {
-
 				System.out.println("******************************");
 				System.out.println("1. HIDE A FILE IN A BMP IMAGE");
 				System.out.println("******************************");
@@ -35,20 +34,35 @@ public class Main {
 				String bmpFileName = sc.nextLine();
 
 				Path bmpFile = FileSystems.getDefault().getPath(bmpFilePath, bmpFileName);
-				if (!Files.exists(bmpFile, LinkOption.NOFOLLOW_LINKS)) 
-					System.out.println("This file does not exists on this path or the path is not correct");
-				else{
-					System.out.println("Insert the file path of the directory where the file to hide is.");
-					String fileToHidePath = sc.nextLine();
-					System.out.println("Insert the file name (with the extension) of the file to hide.");
-					String fileToHideName = sc.nextLine();
 
-					Path fileToHide = FileSystems.getDefault().getPath(fileToHidePath, fileToHideName);
-					if (!Files.exists(fileToHide, LinkOption.NOFOLLOW_LINKS)) 
-						System.out.println("This file does not exists on this path or the path is not correct");
-					else{
-						Stegano stegano = new Stegano();
-						stegano.steganoHide(bmpFilePath, bmpFileName, bmpFile, fileToHidePath, fileToHideName, fileToHide);
+				//check if the path and the file inserted for the image exist and if the file is in this path
+				if (!Files.exists(bmpFile, LinkOption.NOFOLLOW_LINKS)) 
+					System.out.println("This file does not exist in this path or the path is not correct");
+
+				else{
+					String bmpFileExtension = Stegano.getFileExtension(bmpFile);
+					
+					//check if the image file inserted is already a BMP file
+					if (bmpFileExtension.equals("bmp")) {
+						System.out.println("Insert the file path of the directory where the file to hide is.");
+						String fileToHidePath = sc.nextLine();
+						System.out.println("Insert the file name (with the extension) of the file to hide.");
+						String fileToHideName = sc.nextLine();
+
+						Path fileToHide = FileSystems.getDefault().getPath(fileToHidePath, fileToHideName);
+						
+						//check if the path and the file inserted for the file to hide exist and if the file is in this path
+						if (!Files.exists(fileToHide, LinkOption.NOFOLLOW_LINKS)) 
+							System.out.println("This file does not exist in this path or the path is not correct");
+						
+						else{
+							Stegano stegano = new Stegano();
+							stegano.steganoHide(bmpFilePath, bmpFileName, bmpFile, fileToHidePath, fileToHideName, fileToHide);
+						}
+					}
+			
+					else {
+						System.out.println("This file is not a BMP file");
 					}
 				}
 			}
@@ -66,11 +80,23 @@ public class Main {
 				String bmpFileName = sc.nextLine();
 
 				Path bmpFile = FileSystems.getDefault().getPath(bmpFilePath, bmpFileName);
+				
+				//check if the path and the file inserted for the image exist and if the file is in this path
 				if (!Files.exists(bmpFile, LinkOption.NOFOLLOW_LINKS)) 
-					System.out.println("This file does not exists on this path or the path is not correct");
+					System.out.println("This file does not exist in this path or the path is not correct");
+
 				else{
-					Stegano stegano = new Stegano();
-					stegano.steganoRecover(bmpFilePath, bmpFile);
+					String bmpFileExtension = Stegano.getFileExtension(bmpFile);
+
+					//check if the image file inserted is already a BMP file
+					if (bmpFileExtension.equals("bmp")) {
+						Stegano stegano = new Stegano();
+						stegano.steganoRecover(bmpFilePath, bmpFile);
+					}
+
+					else {
+						System.out.println("This file is not a BMP file");
+					}
 				}
 			}
 

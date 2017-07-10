@@ -11,6 +11,8 @@ import java.nio.ByteOrder;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 
+import com.scholanova.group2.cecilia.stegano.Stegano;
+
 public class FileReader {
 
 	private byte[] pairOfBits;
@@ -83,22 +85,6 @@ public class FileReader {
 		this.fileExtensionSize = fileExtensionSize;
 	}
 
-
-	/**
-	 * get the extension of a file from his path
-	 * @param path
-	 * @return
-	 */
-	public String getFileExtension (Path path) {
-		String name = path.toString();
-		try {
-			return name.substring(name.lastIndexOf(".") + 1);
-		} catch (Exception e) {
-			return "";
-		}
-	}
-
-
 	/** 
 	 * get the required information to subsequent file recovery and reconstruction 
 	 * @param file
@@ -108,7 +94,7 @@ public class FileReader {
 	public byte[] getFileInformationToReconstruction(File file, Path path) throws IOException {
 
 		this.fileToHideSize = file.length();
-		this.fileExtension = getFileExtension(path);
+		this.fileExtension = Stegano.getFileExtension(path);
 		this.fileExtensionSize = (byte) fileExtension.length();
 
 		//8 byte array with the size of the file to hide or recover
