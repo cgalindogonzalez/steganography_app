@@ -22,11 +22,8 @@ public class Stegano {
 	 * @param fileToHideName
 	 * @throws IOException
 	 */
-	public void steganoHide(String bmpFilePath, String bmpFileName, String fileToHidePath, String fileToHideName) throws IOException {
-		
-		Path bmpFile = FileSystems.getDefault().getPath(bmpFilePath, bmpFileName);
-		Path fileToHide = FileSystems.getDefault().getPath(fileToHidePath, fileToHideName);
-		
+	public void steganoHide(String bmpFilePath, String bmpFileName, Path bmpFile, String fileToHidePath, String fileToHideName, Path fileToHide) throws IOException {
+	
 		//read the bmpFile and divide it into his parts (file header, bmp header and image body)
 		BMPFileReader bmpFileReader = new BMPFileReader();
 		bmpFileReader.readBMPFile(bmpFile.toFile());
@@ -88,10 +85,8 @@ public class Stegano {
 	 * @param bmpFileName
 	 * @throws IOException
 	 */
-	public void steganoRecover (String bmpFilePath, String bmpFileName) throws IOException {
+	public void steganoRecover (String bmpFilePath, Path bmpFile) throws IOException {
 		
-		Path bmpFile = FileSystems.getDefault().getPath(bmpFilePath, bmpFileName);
-	
 		BMPFileReader bmpFileReader = new BMPFileReader();
 		bmpFileReader.readBMPFile(bmpFile.toFile());
 		
@@ -115,12 +110,12 @@ public class Stegano {
 			//get the size of the hidden file
 			long fileLehgth = fileReader.getFileSizeFromRecoveredArray(arrayToRecoverTheFile);
 			
+			//get the extension of the hidden file
+			String fileExtension = fileReader.getFileExtensionFromRecoveredArray(arrayToRecoverTheFile);
+			
 			//get a byte array from the recovered array whose length is the file size (after removing the file information located on the first bytes)
 			byte[] fileArray = fileReader.getFileArrayFromRecoveredArray(arrayToRecoverTheFile, fileLehgth);
 			
-			//get the extension of the hidden file
-			String fileExtension = fileReader.getFileExtensionFromRecoveredArray(arrayToRecoverTheFile);
-			System.out.println("extension: " + fileExtension);
 			//save the file
 			fileReader.saveFile(fileArray, bmpFilePath, fileExtension);
 			
@@ -128,7 +123,6 @@ public class Stegano {
 			Path recoveredFile = FileSystems.getDefault().getPath(bmpFilePath, fileName);
 			
 			System.out.println("You can find the file in: " + recoveredFile);
-		
 			
 		}
 		
@@ -146,7 +140,7 @@ public class Stegano {
 		int imageWidth = image.getWidth();
 		int imageHeight = image.getHeight();
 		
-		
+		int i = 0;
 		for (int x = 0; x < imageHeight; x++) {
 			for (int y = 0; y < imageWidth; y++) {
 				int rgb = image.getRGB(y, x);
@@ -159,7 +153,6 @@ public class Stegano {
 				int greenRounded = (green-(green & 3));
 				int blueRounded = (blue-(blue & 3));
 
-				int i = (y + x*imageHeight);
 				if ((i+2) < byteArray.length) {
 					red = redRounded + byteArray[i];
 					green = greenRounded + byteArray[i+1];
@@ -191,9 +184,9 @@ public class Stegano {
 		int height = bi.getHeight();
 		byte[] LSBarray = new byte[3*width*height];
 		int i = 0;
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
-				int rgb = bi.getRGB(x, y);
+		for (int x = 0; x < height; x++) {
+			for (int y = 0; y < width; y++) {
+				int rgb = bi.getRGB(y, x);
 				Color color = new Color(rgb, true);
 				int red = color.getRed();
 				int green = color.getGreen();

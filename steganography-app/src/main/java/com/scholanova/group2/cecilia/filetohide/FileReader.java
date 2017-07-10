@@ -232,6 +232,7 @@ public class FileReader {
 	public String getFileExtensionFromRecoveredArray (byte[] b) {
 		byte fileExtensionSize = b[8];
 		byte[] extensionFileArray = new byte[fileExtensionSize];
+		System.arraycopy(b, 9, extensionFileArray, 0, fileExtensionSize);
 		String str = new String (extensionFileArray);
 		return str;
 	}
@@ -245,8 +246,9 @@ public class FileReader {
 	 */
 	public byte[] getFileArrayFromRecoveredArray (byte[] b, long size) {
 		int length = (int) size;
+		byte fileExtensionSize = b[8];
 		byte[] fileArray = new byte[length];
-		System.arraycopy(b, 16, fileArray, 0, length);		
+		System.arraycopy(b, (9+fileExtensionSize), fileArray, 0, length);		
 		return fileArray;
 	}
 
